@@ -12,6 +12,6 @@ struct Application {
 
     // MARK: - Properties
 
-    static let baseURL = "https://stage.mobstar.com"
+    static let baseURL = "https://paste_your_base_url.here"
 
 }
