@@ -9,37 +9,74 @@
 import Foundation
 import Alamofire
 
-final class APICient {
+// MARK: - Protocol
+
+protocol APIClientProtocol: class {
+    @discardableResult
+    func performRequest<T: Decodable>(route: Router,
+                                      decoder: JSONDecoder,
+                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
+    @discardableResult
+    func performRequest<T: Decodable>(route: Router,
+                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
+    @discardableResult
+    func performMultipartRequest<T: Decodable>(route: Router,
+                                               uploadData: [UploadData],
+                                               parameters: Parameters,
+                                               decoder: JSONDecoder,
+                                               uploadProgressHandler: @escaping Request.ProgressHandler,
+                                               completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
+}
+
+final class APIClient: APIClientProtocol {
 
     @discardableResult
-    func performRequest<T: Decodable>(route: Router, decoder: JSONDecoder = JSONDecoder(), completion: @escaping (Result<T, CustomError>) -> Void) -> DataRequest {
+    func performRequest<T: Decodable>(route: Router,
+                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
+        performRequest(route: route, decoder: JSONDecoder(), completion: completion)
+    }
+
+    @discardableResult
+    func performRequest<T: Decodable>(route: Router,
+                                      decoder: JSONDecoder,
+                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
         return AF.request(route).validate().responseDecodable(decoder: decoder) { (response: DataResponse<T>) in
             switch response.result {
             case .success(let response):
                 completion(.success(response))
             case .failure(let error):
-                let error = CustomError(data: response.data, error: error)
+                let error = APIError(data: response.data, error: error)
                 completion(.failure(error))
             }
         }
     }
 
     @discardableResult
-    func performMultipartRequest<T: Decodable>(route: Router, uploadData: [UploadData], parameters: Parameters, decoder: JSONDecoder = JSONDecoder(), completion: @escaping (Result<T, CustomError>) -> Void) -> DataRequest {
+    func performMultipartRequest<T: Decodable>(route: Router,
+                                               uploadData: [UploadData],
+                                               parameters: Parameters,
+                                               decoder: JSONDecoder = JSONDecoder(),
+                                               uploadProgressHandler: @escaping Request.ProgressHandler,
+                                               completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
         return AF.upload(multipartFormData: { (multipart) in
-            uploadData.forEach({ multipart.append($0.data, withName: $0.name, fileName: $0.fileName, mimeType: $0.mimeType) })
-
+            uploadData.forEach({ multipart.append($0.data,
+                                                  withName: $0.name,
+                                                  fileName: $0.fileName,
+                                                  mimeType: $0.mimeType) })
             for (key, value) in parameters {
                 if let data = "\(value)".data(using: .utf8) {
                     multipart.append(data, withName: key)
                 }
             }
-        }, with: route).validate().responseDecodable(decoder: decoder) { (response: DataResponse<T>) in
+        }, with: route)
+            .uploadProgress(closure: uploadProgressHandler)
+            .validate()
+            .responseDecodable(decoder: decoder) { (response: DataResponse<T>) in
             switch response.result {
             case .success(let response):
                 completion(.success(response))
             case .failure(let error):
-                let error = CustomError(data: response.data, error: error)
+                let error = APIError(data: response.data, error: error)
                 completion(.failure(error))
             }
         }

@@ -10,6 +10,7 @@ import Foundation
 import Alamofire
 
 protocol Router: URLRequestConvertible {
+    var baseURL: String { get }
     var path: String { get }
     var headers: HTTPHeaders { get }
     var parameters: Parameters? { get }
@@ -18,6 +19,10 @@ protocol Router: URLRequestConvertible {
 }
 
 extension Router {
+
+    var baseURL: String {
+        return "https://jsonplaceholder.typicode.com"
+    }
 
     var encoding: ParameterEncoding {
         switch method {
@@ -45,7 +50,7 @@ extension Router {
     }
 
     func asURLRequest() throws -> URLRequest {
-        let requestURL = try Application.baseURL.asURL().appendingPathComponent(path)
+        let requestURL = try baseURL.asURL().appendingPathComponent(path)
         var request = URLRequest(url: requestURL)
         request.httpMethod = method.rawValue
         headers.forEach({ request.addValue($0.value, forHTTPHeaderField: $0.name) })
