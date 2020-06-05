@@ -14,17 +14,12 @@ import Alamofire
 protocol APIClientProtocol: class {
     @discardableResult
     func performRequest<T: Decodable>(route: Router,
-                                      decoder: JSONDecoder,
-                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
-    @discardableResult
-    func performRequest<T: Decodable>(route: Router,
                                       completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
     @discardableResult
     func performMultipartRequest<T: Decodable>(route: Router,
                                                uploadData: [UploadData],
                                                parameters: Parameters,
-                                               decoder: JSONDecoder,
-                                               uploadProgressHandler: @escaping Request.ProgressHandler,
+                                               uploadProgressHandler: (Request.ProgressHandler)?,
                                                completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest
 }
 
@@ -45,15 +40,8 @@ final class APIClient: APIClientProtocol {
     @discardableResult
     func performRequest<T: Decodable>(route: Router,
                                       completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
-        performRequest(route: route, decoder: JSONDecoder(), completion: completion)
-    }
-
-    @discardableResult
-    func performRequest<T: Decodable>(route: Router,
-                                      decoder: JSONDecoder,
-                                      completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
         consoleLogger.requestStart(router: route)
-        return AF.request(route).validate().responseDecodable(decoder: decoder) { [weak self] (response: DataResponse<T>) in
+        return AF.request(route).validate().responseDecodable { [weak self] (response: DataResponse<T>) in
             self?.consoleLogger.requestFinished(response: response)
             switch response.result {
             case .success(let response):
@@ -69,8 +57,7 @@ final class APIClient: APIClientProtocol {
     func performMultipartRequest<T: Decodable>(route: Router,
                                                uploadData: [UploadData],
                                                parameters: Parameters,
-                                               decoder: JSONDecoder = JSONDecoder(),
-                                               uploadProgressHandler: @escaping Request.ProgressHandler,
+                                               uploadProgressHandler: (Request.ProgressHandler)?,
                                                completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
         consoleLogger.requestStart(router: route)
         return AF.upload(multipartFormData: { (multipart) in
@@ -84,9 +71,11 @@ final class APIClient: APIClientProtocol {
                 }
             }
         }, with: route)
-            .uploadProgress(closure: uploadProgressHandler)
+            .uploadProgress(closure: { (progress) in
+                uploadProgressHandler?(progress)
+            })
             .validate()
-            .responseDecodable(decoder: decoder) { [weak self] (response: DataResponse<T>) in
+            .responseDecodable { [weak self] (response: DataResponse<T>) in
                 self?.consoleLogger.requestFinished(response: response)
                 switch response.result {
                 case .success(let response):
