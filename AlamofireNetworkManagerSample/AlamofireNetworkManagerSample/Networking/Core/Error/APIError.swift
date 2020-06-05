@@ -8,13 +8,6 @@
 
 import Foundation
 
-struct APIErrorModel: Codable {
-
-    // MARK: - Properties
-
-    var message: String
-}
-
 struct APIError: LocalizedError {
 
     // MARK: - Properties

@@ -30,6 +30,18 @@ protocol APIClientProtocol: class {
 
 final class APIClient: APIClientProtocol {
 
+    // MARK: - Properties
+
+    private let consoleLogger: ConsoleLoggerProtocol
+
+    // MARK: - Initialization
+
+    init(consoleLogger: ConsoleLoggerProtocol = ConsoleLogger()) {
+        self.consoleLogger = consoleLogger
+    }
+
+    // MARK: - Public
+
     @discardableResult
     func performRequest<T: Decodable>(route: Router,
                                       completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
@@ -40,7 +52,9 @@ final class APIClient: APIClientProtocol {
     func performRequest<T: Decodable>(route: Router,
                                       decoder: JSONDecoder,
                                       completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
-        return AF.request(route).validate().responseDecodable(decoder: decoder) { (response: DataResponse<T>) in
+        consoleLogger.requestStart(router: route)
+        return AF.request(route).validate().responseDecodable(decoder: decoder) { [weak self] (response: DataResponse<T>) in
+            self?.consoleLogger.requestFinished(response: response)
             switch response.result {
             case .success(let response):
                 completion(.success(response))
@@ -58,6 +72,7 @@ final class APIClient: APIClientProtocol {
                                                decoder: JSONDecoder = JSONDecoder(),
                                                uploadProgressHandler: @escaping Request.ProgressHandler,
                                                completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
+        consoleLogger.requestStart(router: route)
         return AF.upload(multipartFormData: { (multipart) in
             uploadData.forEach({ multipart.append($0.data,
                                                   withName: $0.name,
@@ -71,14 +86,15 @@ final class APIClient: APIClientProtocol {
         }, with: route)
             .uploadProgress(closure: uploadProgressHandler)
             .validate()
-            .responseDecodable(decoder: decoder) { (response: DataResponse<T>) in
-            switch response.result {
-            case .success(let response):
-                completion(.success(response))
-            case .failure(let error):
-                let error = APIError(data: response.data, error: error)
-                completion(.failure(error))
-            }
+            .responseDecodable(decoder: decoder) { [weak self] (response: DataResponse<T>) in
+                self?.consoleLogger.requestFinished(response: response)
+                switch response.result {
+                case .success(let response):
+                    completion(.success(response))
+                case .failure(let error):
+                    let error = APIError(data: response.data, error: error)
+                    completion(.failure(error))
+                }
         }
     }
 

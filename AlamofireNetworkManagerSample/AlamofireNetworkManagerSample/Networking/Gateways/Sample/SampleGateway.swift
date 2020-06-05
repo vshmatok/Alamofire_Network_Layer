@@ -40,7 +40,7 @@ class SampleGateway: SampleGatewayProtocol {
         self.apiClient = apiClient
     }
 
-    // MARK: - Internal
+    // MARK: - Public
 
     func getAllPosts(completion: @escaping (Result<PostsResponse, APIError>) -> Void) {
         let route = SampleRouter.getPosts
