@@ -1,5 +1,4 @@
-# Alamofire_Network_Layer
+# Alamofire Network Layer
 
-Base network layer using Alamofire.
-
+Network layer written on top of Alamofire.
 https://github.com/Alamofire/Alamofire
