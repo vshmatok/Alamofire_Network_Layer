@@ -16,11 +16,12 @@
 		2331EE2E230E9E7100404760 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331EE2D230E9E7100404760 /* APIClient.swift */; };
 		2331EE30230E9ED900404760 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331EE2F230E9ED900404760 /* Router.swift */; };
 		23B69755248A5C11008872FE /* APIErrorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B69754248A5C11008872FE /* APIErrorModel.swift */; };
-		23B69758248A5C76008872FE /* Router + Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B69757248A5C76008872FE /* Router + Base.swift */; };
 		23D5B129248977CE0001E45F /* PostsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D5B128248977CE0001E45F /* PostsResponse.swift */; };
 		23D5B12C2489781C0001E45F /* SampleGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D5B12B2489781C0001E45F /* SampleGateway.swift */; };
 		23D5B12E24897BB00001E45F /* PostResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D5B12D24897BB00001E45F /* PostResponse.swift */; };
 		23D5B130248990C50001E45F /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D5B12F248990C40001E45F /* ConsoleLogger.swift */; };
+		23DA943F24C1D6B6002E2776 /* RequestInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DA943E24C1D6B6002E2776 /* RequestInterceptor.swift */; };
+		23DA944124C1D718002E2776 /* ApplicationConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DA944024C1D718002E2776 /* ApplicationConstants.swift */; };
 		23ECAEFF2489386D00049E66 /* VoidResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23ECAEFE2489386D00049E66 /* VoidResponse.swift */; };
 		23ECAF012489388300049E66 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23ECAF002489388300049E66 /* APIError.swift */; };
 		23ECAF062489628300049E66 /* SampleRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23ECAF052489628300049E66 /* SampleRouter.swift */; };
@@ -42,11 +43,12 @@
 		2331EE2D230E9E7100404760 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		2331EE2F230E9ED900404760 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		23B69754248A5C11008872FE /* APIErrorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrorModel.swift; sourceTree = "<group>"; };
-		23B69757248A5C76008872FE /* Router + Base.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Router + Base.swift"; sourceTree = "<group>"; };
 		23D5B128248977CE0001E45F /* PostsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsResponse.swift; sourceTree = "<group>"; };
 		23D5B12B2489781C0001E45F /* SampleGateway.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleGateway.swift; sourceTree = "<group>"; };
 		23D5B12D24897BB00001E45F /* PostResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostResponse.swift; sourceTree = "<group>"; };
 		23D5B12F248990C40001E45F /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
+		23DA943E24C1D6B6002E2776 /* RequestInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestInterceptor.swift; sourceTree = "<group>"; };
+		23DA944024C1D718002E2776 /* ApplicationConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationConstants.swift; sourceTree = "<group>"; };
 		23ECAEFE2489386D00049E66 /* VoidResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoidResponse.swift; sourceTree = "<group>"; };
 		23ECAF002489388300049E66 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		23ECAF052489628300049E66 /* SampleRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRouter.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 		2331EE2A230E9E3A00404760 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				23DA943D24C1D69A002E2776 /* Interceptors */,
 				23B69759248A5C9C008872FE /* Logger */,
 				23B69756248A5C25008872FE /* Router */,
 				23B69752248A5BF4008872FE /* Error */,
@@ -144,6 +147,7 @@
 			children = (
 				23ECAEFE2489386D00049E66 /* VoidResponse.swift */,
 				2331EE2B230E9E4D00404760 /* UploadData.swift */,
+				23DA944024C1D718002E2776 /* ApplicationConstants.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -161,7 +165,6 @@
 			isa = PBXGroup;
 			children = (
 				2331EE2F230E9ED900404760 /* Router.swift */,
-				23B69757248A5C76008872FE /* Router + Base.swift */,
 			);
 			path = Router;
 			sourceTree = "<group>";
@@ -172,6 +175,14 @@
 				23D5B12F248990C40001E45F /* ConsoleLogger.swift */,
 			);
 			path = Logger;
+			sourceTree = "<group>";
+		};
+		23DA943D24C1D69A002E2776 /* Interceptors */ = {
+			isa = PBXGroup;
+			children = (
+				23DA943E24C1D6B6002E2776 /* RequestInterceptor.swift */,
+			);
+			path = Interceptors;
 			sourceTree = "<group>";
 		};
 		23ECAF022489623800049E66 /* Sample */ = {
@@ -336,7 +347,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23DA943F24C1D6B6002E2776 /* RequestInterceptor.swift in Sources */,
 				2331EE2C230E9E4D00404760 /* UploadData.swift in Sources */,
+				23DA944124C1D718002E2776 /* ApplicationConstants.swift in Sources */,
 				23ECAF0824896F6600049E66 /* UsersPostRequestModel.swift in Sources */,
 				23D5B12E24897BB00001E45F /* PostResponse.swift in Sources */,
 				23B69755248A5C11008872FE /* APIErrorModel.swift in Sources */,
@@ -350,7 +363,6 @@
 				23ECAF0D2489750200049E66 /* UpdatePostRequestModel.swift in Sources */,
 				2331EE0C230E9AD200404760 /* AppDelegate.swift in Sources */,
 				2331EE2E230E9E7100404760 /* APIClient.swift in Sources */,
-				23B69758248A5C76008872FE /* Router + Base.swift in Sources */,
 				23ECAF0B2489710F00049E66 /* CreatePostRequestModel.swift in Sources */,
 				23ECAF012489388300049E66 /* APIError.swift in Sources */,
 			);

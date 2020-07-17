@@ -27,12 +27,12 @@ final class APIClient: APIClientProtocol {
 
     // MARK: - Properties
 
-    private let consoleLogger: ConsoleLoggerProtocol
+    private let session: Session
 
     // MARK: - Initialization
 
-    init(consoleLogger: ConsoleLoggerProtocol = ConsoleLogger()) {
-        self.consoleLogger = consoleLogger
+    init(session: Session = Session(interceptor: RequestInterceptor(), eventMonitors: [APILogger()])) {
+        self.session = session
     }
 
     // MARK: - Public
@@ -40,9 +40,7 @@ final class APIClient: APIClientProtocol {
     @discardableResult
     func performRequest<T: Decodable>(route: Router,
                                       completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
-        consoleLogger.requestStart(router: route)
-        return AF.request(route).validate().responseDecodable { [weak self] (response: DataResponse<T>) in
-            self?.consoleLogger.requestFinished(response: response)
+        return session.request(route).validate().responseDecodable(of: T.self) { response in
             switch response.result {
             case .success(let response):
                 completion(.success(response))
@@ -59,7 +57,6 @@ final class APIClient: APIClientProtocol {
                                                parameters: Parameters,
                                                uploadProgressHandler: (Request.ProgressHandler)?,
                                                completion: @escaping (Result<T, APIError>) -> Void) -> DataRequest {
-        consoleLogger.requestStart(router: route)
         return AF.upload(multipartFormData: { (multipart) in
             uploadData.forEach({ multipart.append($0.data,
                                                   withName: $0.name,
@@ -75,8 +72,7 @@ final class APIClient: APIClientProtocol {
                 uploadProgressHandler?(progress)
             })
             .validate()
-            .responseDecodable { [weak self] (response: DataResponse<T>) in
-                self?.consoleLogger.requestFinished(response: response)
+            .responseDecodable(of: T.self) { response in
                 switch response.result {
                 case .success(let response):
                     completion(.success(response))

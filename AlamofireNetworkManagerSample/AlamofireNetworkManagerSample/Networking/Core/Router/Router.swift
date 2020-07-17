@@ -17,3 +17,45 @@ protocol Router: URLRequestConvertible {
     var method: HTTPMethod { get }
     var encoding: ParameterEncoding { get }
 }
+
+extension Router {
+
+    var baseURL: String {
+        return ApplicationConstants.baseURL
+    }
+
+    var encoding: ParameterEncoding {
+        switch method {
+        case .get:
+            return URLEncoding.default
+        default:
+            return JSONEncoding.default
+        }
+    }
+
+    var path: String {
+        return ""
+    }
+
+    var headers: HTTPHeaders {
+        return .default
+    }
+
+    var parameters: Parameters? {
+        return nil
+    }
+
+    var method: HTTPMethod {
+        return .get
+    }
+
+    func asURLRequest() throws -> URLRequest {
+        let requestURL = try baseURL.asURL().appendingPathComponent(path)
+        var request = URLRequest(url: requestURL)
+        request.httpMethod = method.rawValue
+        headers.forEach({ request.addValue($0.value, forHTTPHeaderField: $0.name) })
+
+        return try encoding.encode(request, with: parameters)
+    }
+}
+
