@@ -13,6 +13,9 @@ class APILogger: EventMonitor {
 
     func requestDidResume(_ request: Request) {
         print("🌎 \(request)")
+        if let data = request.request?.httpBody, let prettyPrintedString = data.prettyPrintedJSONString {
+            print(prettyPrintedString)
+        }
     }
 
     func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {
